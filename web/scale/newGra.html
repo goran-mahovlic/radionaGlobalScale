@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Weight</title>
+<center><img src="pics/radiona.png" alt="radiona"><br><br></center>
+<center><label id="radionaVaga">Radiona vaga v1.0</label><br><br><br></center>
+<center><label id="acum">Acumulated</label><br></center>
+<center><label id="average">Average</label><br></center>
+<center><label id="number">Number</label><br><br></center>
+<center><p id="accum"></p></center>
+<div style=\"font-size:1rem;position:fixed;bottom:0;\">by Goran Mahovlić</div>
+<!-- 1. Add these JavaScript inclusions in the head of your page -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/modules/data.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+
+<!-- 2. Add the JavaScript to initialize the chart on document ready -->
+<script type="text/javascript">
+
+
+d3.csv("data/data.csv", function (csv) {
+
+var sum = 0;
+var count = 0;
+var data = d3.nest()
+  .key(function(d) {
+     return d.User;
+   })
+   .rollup(function(d) {
+     return d3.sum(d, function(g) {
+       sum += +g.Weight;
+       count++;
+       return g.Weight;
+     });
+   }).entries(csv);
+
+var avg = sum / count;
+console.log(avg);
+console.log(count);
+console.log(sum);
+
+
+   document.getElementById('number').innerHTML = 'Izvagano ' + count + ' posjetitelja';
+   document.getElementById('acum').innerHTML = 'Akumulirana težina posjetitelja: ' + sum.toFixed(2);;
+   document.getElementById('average').innerHTML = 'Prosječna težina posjetitelja: ' + avg.toFixed(2);;
+  })
+//setInterval(function, 5000); //300000 MS == 5 minutes
+
+
+
+function function1() {
+
+$(document).ready(function() {
+
+/*
+Load the data from the CSV file. This is the contents of the file:
+User,Weight
+User,3.5
+*/ 
+
+$.get('data/data.csv', function(csv) {
+$('#container').highcharts({
+chart: {
+type: 'line'
+},
+data: {
+csv: csv
+
+},
+title: {
+text: 'Mjerenja'
+},
+yAxis: {
+title: {
+text: 'kg'
+}
+}
+});
+});
+
+
+});
+}
+setInterval(function1, 2000); 
+//setInterval(function, 5000);
+
+</script>
+
+
+</head>
+<body>
+
+<!-- 3. Add the container -->
+<div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+
+</body>
+</html>
