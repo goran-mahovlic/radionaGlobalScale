@@ -1,4 +1,4 @@
-#Radiona.org global scale project
+# Radiona.org global scale project
 
 Project done for opensource medicine exibition
 http://radiona.org/izlozba-medicina-otvorenog-koda/
