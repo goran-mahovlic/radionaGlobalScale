@@ -9,7 +9,7 @@
 #include <HX711_ADC.h>
 #include "soc/rtc.h"
 
-const char* mqttServer = "your_mqtt_server";
+const char* mqttServer = "xxx.xxx.xxx.xxx";
 const int mqttPort = 1883;
 
 WiFiClient espClient;
@@ -29,8 +29,8 @@ boolean mqttSendt = true;
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 WiFiServer server ( 80 );
 
-const char* ssid = "ssid_id";
-const char* password = "ssid_pass";
+const char* ssid = "SSID";
+const char* password = "PASS";
 
 void setup() {
   u8x8.begin();
@@ -113,6 +113,7 @@ void setup() {
   Serial.println("Startup + tare is complete");
   u8x8.drawString(0, 4, "Ready");
   server.begin();
+  u8x8.setPowerSave(1);
 }
 
 void loop() {
@@ -201,11 +202,11 @@ void serveClient(){
 long readScale2(){
   LoadCell.update();
   Weight = -(LoadCell.getData());
-  if(Weight>5){
-    char buf[20];
-    sprintf(buf, "%04.02f", Weight);
-    client2.publish("scale", buf);
-    }
+ // if(Weight>5){
+ //   char buf[20];
+ //   sprintf(buf, "%04.02f", Weight);
+ //   client2.publish("scale", buf);
+ //   }
   return Weight/100.00;
 }
   
@@ -214,11 +215,6 @@ void readScale(){
   //get smoothed value from data set + current calibration factor
   if (millis() > t + 2000) {
     float i = LoadCell.getData();
-   // Serial.print("Load_cell output val: ");
-    u8x8.clearDisplay();
-   // u8x8.drawString(0, 1, "radiona.org");
-    u8x8.setCursor(0, 0);
-    u8x8.printf("%l.2 kg", -(i/100));
     Serial.print(-(i/100));
     Weight = -(i/100);
     Serial.println("kg");
@@ -226,6 +222,7 @@ void readScale(){
 
    if(int(Weight)==0){
     mqttSendt = true;
+    u8x8.setPowerSave(1);
     }
    
    if(Weight>5 && mqttSendt){
@@ -236,6 +233,12 @@ void readScale(){
           client2.publish("scale", buf);
           Serial.println("Send ok!");
           mqttSendt = false;
+          u8x8.setPowerSave(0);
+          u8x8.clearDisplay();
+          u8x8.setCursor(0, 0);
+          u8x8.printf("%d.2 kg", Weight);
+          u8x8.drawString(0, 4, "radiona.org");          
+          u8x8.drawString(0, 7, "global scale");
       }
     }
     oldWeight = Weight;
