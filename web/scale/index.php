@@ -32,7 +32,7 @@ function get_data($url){
 
 if($_GET['data']==1){
     header('Content-Type: application/json');
-    $d = get_data('http://178.62.187.251/graph/data.csv');
+    $d = get_data('http://your_server_ip/graph/data.csv');
     echo json_encode($d);
 }
 else{
